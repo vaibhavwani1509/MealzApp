@@ -49,10 +49,10 @@ fun CategoryCard(
         ) {
             AsyncImage(
                 modifier = Modifier.padding(16.dp),
-                model = category.strCategoryThumb,
+                model = category.image,
                 contentDescription = null
             )
-            Text(text = category.strCategory ?: "")
+            Text(text = category.name ?: "")
         }
     }
 }

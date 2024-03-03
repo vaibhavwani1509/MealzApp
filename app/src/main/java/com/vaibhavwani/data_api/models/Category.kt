@@ -3,8 +3,8 @@ package com.vaibhavwani.data_api.models
 import com.google.gson.annotations.SerializedName
 
 data class Category(
-    @SerializedName("idCategory") val idCategory: String? = "",
-    @SerializedName("strCategory") val strCategory: String? = "",
-    @SerializedName("strCategoryDescription") val strCategoryDescription: String? = "",
-    @SerializedName("strCategoryThumb") val strCategoryThumb: String? = ""
+    @SerializedName("idCategory") val id: String? = "",
+    @SerializedName("strCategory") val name: String? = "",
+    @SerializedName("strCategoryDescription") val description: String? = "",
+    @SerializedName("strCategoryThumb") val image: String? = ""
 )
