@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vaibhavwani.data_api.models.Category
+import com.vaibhavwani.mealzapp.ui.meals.MealsCategoriesScreen
 import com.vaibhavwani.mealzapp.ui.meals.MealsViewModel
 import com.vaibhavwani.mealzapp.ui.theme.MealzAppTheme
 import kotlinx.coroutines.Dispatchers
@@ -41,38 +42,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    MealsCategoriesScreen()
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    val viewModel: MealsViewModel = viewModel()
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(viewModel.categories.value) {
-            it?.strCategory?.let {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(16.dp),
-                    text = it
-                )
-                Divider()
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MealzAppTheme {
-        Greeting("Android")
-    }
-}
