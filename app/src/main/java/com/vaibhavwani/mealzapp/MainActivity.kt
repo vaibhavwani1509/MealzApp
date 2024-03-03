@@ -5,6 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -13,9 +20,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vaibhavwani.data_api.models.Category
-import com.vaibhavwani.data_api.models.MealzCategoriesResponse
 import com.vaibhavwani.mealzapp.ui.meals.MealsViewModel
 import com.vaibhavwani.mealzapp.ui.theme.MealzAppTheme
 
@@ -44,10 +51,22 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     viewModel.getMealCategories {
         categories.value = it.categories.orEmpty()
     }
-    Text(
-        text = categories.value.toString(),
-        modifier = modifier
-    )
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(categories.value) {
+            it?.strCategory?.let {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(16.dp),
+                    text = it
+                )
+                Divider()
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)
