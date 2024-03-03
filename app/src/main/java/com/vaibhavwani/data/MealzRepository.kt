@@ -6,7 +6,5 @@ class MealzRepository(
     private val mealsService: MealsService = MealsService()
 ) {
 
-    fun getMeals(
-        successCallback: (response: MealzCategoriesResponse) -> Unit
-    ) = mealsService.getMeals(successCallback)
+    suspend fun getMeals() = mealsService.getMeals()
 }

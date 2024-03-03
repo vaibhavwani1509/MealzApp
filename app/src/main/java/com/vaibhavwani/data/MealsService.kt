@@ -10,32 +10,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MealsService {
 
-    private lateinit var api: MealsApi
-
-    init {
+    private val api: MealsApi by lazy {
         val retrofit = Retrofit
             .Builder()
             .baseUrl("https://www.themealdb.com/api/json/v1/1/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        api = retrofit.create(MealsApi::class.java)
+        retrofit.create(MealsApi::class.java)
     }
 
-    fun getMeals(
-        successCallback: (response: MealzCategoriesResponse) -> Unit
-    ) = api.getMeals().enqueue(object : Callback<MealzCategoriesResponse> {
-        override fun onResponse(
-            call: Call<MealzCategoriesResponse>,
-            response: Response<MealzCategoriesResponse>
-        ) {
-            if (response.isSuccessful) {
-                successCallback(response.body()!!)
-            }
-        }
-
-        override fun onFailure(call: Call<MealzCategoriesResponse>, t: Throwable) {
-            TODO("Not yet implemented")
-        }
-    })
+    suspend fun getMeals() = api.getMeals()
 }

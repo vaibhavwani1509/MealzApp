@@ -8,7 +8,5 @@ class MealsViewModel(
     private val repository: MealzRepository = MealzRepository()
 ): ViewModel() {
 
-    fun getMealCategories(
-        successCallback: (response: MealzCategoriesResponse) -> Unit
-    ) = repository.getMeals(successCallback)
+    suspend fun getMealCategories() = repository.getMeals().categories
 }

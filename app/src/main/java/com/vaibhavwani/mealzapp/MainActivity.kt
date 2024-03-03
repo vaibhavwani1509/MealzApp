@@ -16,8 +16,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,6 +27,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vaibhavwani.data_api.models.Category
 import com.vaibhavwani.mealzapp.ui.meals.MealsViewModel
 import com.vaibhavwani.mealzapp.ui.theme.MealzAppTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,8 +52,11 @@ class MainActivity : ComponentActivity() {
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     val viewModel: MealsViewModel = viewModel()
     val categories = remember { mutableStateOf(emptyList<Category?>()) }
-    viewModel.getMealCategories {
-        categories.value = it.categories.orEmpty()
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(key1 = "Meals") {
+        scope.launch(Dispatchers.IO) {
+            categories.value = viewModel.getMealCategories() ?: emptyList()
+        }
     }
     LazyColumn(
         modifier = Modifier.fillMaxSize()
