@@ -51,17 +51,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     val viewModel: MealsViewModel = viewModel()
-    val categories = remember { mutableStateOf(emptyList<Category?>()) }
-    val scope = rememberCoroutineScope()
-    LaunchedEffect(key1 = "Meals") {
-        scope.launch(Dispatchers.IO) {
-            categories.value = viewModel.getMealCategories() ?: emptyList()
-        }
-    }
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
-        items(categories.value) {
+        items(viewModel.categories.value) {
             it?.strCategory?.let {
                 Text(
                     modifier = Modifier
