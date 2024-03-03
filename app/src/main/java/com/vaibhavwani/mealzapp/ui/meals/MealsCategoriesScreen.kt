@@ -1,12 +1,17 @@
 package com.vaibhavwani.mealzapp.ui.meals
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,12 +28,16 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.vaibhavwani.data_api.models.Category
@@ -51,50 +60,109 @@ fun MealsCategoriesScreen() {
 fun CategoryCard(
     category: Category
 ) {
-    val isExpanded = remember { mutableStateOf(false) }
-    val maxLines by animateIntAsState(if (isExpanded.value) 10 else 4, label = "")
+    var isExpanded by remember { mutableStateOf(false) }
+
+    ExpandableCard(
+        image = category.image,
+        title = category.name,
+        description = category.description,
+        isExpanded = isExpanded
+    ) {
+        isExpanded = !isExpanded
+    }
+}
+
+@Composable
+fun ExpandableCard(
+    image: String? = "",
+    title: String? = "",
+    description: String? = "",
+    isExpanded: Boolean,
+    onExpandToggle: () -> Unit
+) {
     Card(
         modifier = Modifier
-            .animateContentSize()
-            .padding(
-            vertical = 8.dp,
-            horizontal = 16.dp,
-        ),
-        shape = RoundedCornerShape(8.dp)
+            .padding(16.dp)
+            .fillMaxWidth()
+            .animateContentSize(),
     ) {
-        Row(
+        ConstraintLayout(
             modifier = Modifier
+                .padding(16.dp)
                 .fillMaxWidth()
-                .padding(
-                    vertical = 16.dp
-                ),
-            verticalAlignment = Alignment.CenterVertically
         ) {
+            val (imageRef, titleRef, iconRef) = createRefs()
+
             AsyncImage(
-                modifier = Modifier.padding(16.dp),
-                model = category.image,
-                contentDescription = null
+                model = image,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .constrainAs(imageRef) {
+                        top.linkTo(parent.top)
+                        if (isExpanded) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(titleRef.top)
+                            width = Dimension.fillToConstraints
+                            height = Dimension.wrapContent
+                            centerHorizontallyTo(parent)
+                        } else {
+                            start.linkTo(parent.start)
+                            end.linkTo(titleRef.start)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            width = Dimension.wrapContent
+                            height = Dimension.wrapContent
+                        }
+                    }
             )
+
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .padding(8.dp)
+                    .constrainAs(titleRef) {
+                        if (isExpanded) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            top.linkTo(imageRef.bottom)
+                            bottom.linkTo(parent.bottom)
+                            width = Dimension.fillToConstraints
+                            height = Dimension.wrapContent
+                            centerHorizontallyTo(parent)
+                        } else {
+                            start.linkTo(imageRef.end)
+                            end.linkTo(iconRef.start)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            width = Dimension.fillToConstraints
+                            height = Dimension.wrapContent
+                        }
+                    }
             ) {
                 Text(
-                    text = category.name ?: "",
-                    style = MaterialTheme.typography.headlineMedium
+                    text = title ?: "",
+                    style = MaterialTheme.typography.headlineMedium,
                 )
+
                 Text(
-                    text = category.description ?: "",
-                    maxLines = maxLines,
+                    text = description ?: "",
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = if (isExpanded) 10 else 4,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
+
             Icon(
+                imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                contentDescription = null,
                 modifier = Modifier
-                    .align(Alignment.Top)
-                    .clickable { isExpanded.value = !isExpanded.value }
-                    .padding(16.dp),
-                imageVector = if (isExpanded.value) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                contentDescription = null
+                    .constrainAs(iconRef) {
+                        top.linkTo(parent.top, margin = 16.dp)
+                        end.linkTo(parent.end, margin = 16.dp)
+                    }
+                    .clickable { onExpandToggle() }
             )
         }
     }
