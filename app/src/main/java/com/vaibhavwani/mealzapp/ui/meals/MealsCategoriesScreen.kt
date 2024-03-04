@@ -1,13 +1,12 @@
 package com.vaibhavwani.mealzapp.ui.meals
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,6 +15,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -34,14 +35,24 @@ import coil.compose.AsyncImage
 import com.vaibhavwani.data_api.models.Category
 
 @Composable
-fun MealsCategoriesScreen() {
+fun MealsCategoriesScreen(
+    getDetails: (String) -> Unit,
+) {
     val viewModel: MealsViewModel = viewModel()
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(viewModel.categories.value) {
-            it?.let {
-                CategoryCard(it)
+    if (viewModel.categories.value.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                modifier = Modifier.wrapContentSize().align(Alignment.Center)
+            )
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(viewModel.categories.value) {
+                it?.let {
+                    CategoryCard(it, getDetails)
+                }
             }
         }
     }
@@ -49,27 +60,31 @@ fun MealsCategoriesScreen() {
 
 @Composable
 fun CategoryCard(
-    category: Category
+    category: Category,
+    getDetails: (String) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
     ExpandableCard(
+        id = category.id,
         image = category.image,
         title = category.name,
         description = category.description,
-        isExpanded = isExpanded
-    ) {
-        isExpanded = !isExpanded
-    }
+        isExpanded = isExpanded,
+        onExpandToggle = { isExpanded = !isExpanded },
+        getDetails = getDetails,
+    )
 }
 
 @Composable
 fun ExpandableCard(
+    id: String? = "",
     image: String? = "",
     title: String? = "",
     description: String? = "",
     isExpanded: Boolean,
-    onExpandToggle: () -> Unit
+    onExpandToggle: () -> Unit,
+    getDetails: (String) -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -142,7 +157,7 @@ fun ExpandableCard(
                 Text(
                     text = description ?: "",
                     style = MaterialTheme.typography.bodyMedium,
-                    maxLines = if (isExpanded) 10 else 2,
+                    maxLines = if (isExpanded) 5 else 2,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
@@ -169,7 +184,9 @@ fun ExpandableCard(
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         },
-                    onClick = { /*TODO*/ }
+                    onClick = {
+                        getDetails(id ?: "")
+                    }
                 ) {
                     Text(
                         text = "More details",
