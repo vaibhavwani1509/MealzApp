@@ -1,16 +1,20 @@
 package com.vaibhavwani.mealzapp.ui.meals
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -82,7 +86,7 @@ fun ExpandableCard(
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
-            val (imageRef, titleRef, iconRef) = createRefs()
+            val (imageRef, titleRef, iconRef, moreInfoRef) = createRefs()
 
             AsyncImage(
                 model = image,
@@ -116,7 +120,7 @@ fun ExpandableCard(
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                             top.linkTo(imageRef.bottom)
-                            bottom.linkTo(parent.bottom)
+                            bottom.linkTo(moreInfoRef.top)
                             width = Dimension.fillToConstraints
                             height = Dimension.wrapContent
                             centerHorizontallyTo(parent)
@@ -153,6 +157,26 @@ fun ExpandableCard(
                     }
                     .clickable { onExpandToggle() }
             )
+
+            if (isExpanded) {
+                Button(
+                    modifier = Modifier
+                        .animateContentSize()
+                        .wrapContentSize()
+                        .constrainAs(moreInfoRef) {
+                            top.linkTo(titleRef.bottom)
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        },
+                    onClick = { /*TODO*/ }
+                ) {
+                    Text(
+                        text = "More details",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+            }
         }
     }
 }
