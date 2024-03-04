@@ -82,7 +82,11 @@ fun ExpandableCard(
 ) {
     Card(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp,
+            )
             .fillMaxWidth()
             .animateContentSize(),
     ) {
@@ -149,7 +153,7 @@ fun ExpandableCard(
                 Text(
                     text = description ?: "",
                     style = MaterialTheme.typography.bodyMedium,
-                    maxLines = if (isExpanded) 10 else 4,
+                    maxLines = if (isExpanded) 10 else 2,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
